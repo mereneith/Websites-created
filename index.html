@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LevelFILM – Film Scoring Calculator</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px 28px 32px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-top: 24px;
+      border-bottom: 1px solid #e1e1ea;
+      padding-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .inputs, .outputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #33334d;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      border-radius: 8px;
+      border: 1px solid #c7cad8;
+      padding: 8px 10px;
+      font-size: 14px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #7b7b90;
+    }
+
+    .button-row {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+      transition: background 0.15s, transform 0.08s, box-shadow 0.08s;
+    }
+
+    button.secondary {
+      background: #e4e4f7;
+      color: #1e1e3a;
+      box-shadow: none;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(79, 70, 229, 0.35);
+    }
+
+    button.secondary:hover {
+      box-shadow: 0 6px 14px rgba(16, 24, 40, 0.12);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+
+    .card {
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #f8f8ff;
+      border: 1px solid #e0e1fb;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .score-label {
+      color: #44445a;
+    }
+
+    .score-value {
+      font-weight: 600;
+    }
+
+    .score-value.big {
+      font-size: 20px;
+    }
+
+    .risk-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .risk-low {
+      background: #e0f7e9;
+      color: #137333;
+    }
+
+    .risk-medium {
+      background: #fff6e5;
+      color: #b25600;
+    }
+
+    .risk-high {
+      background: #ffe4e4;
+      color: #b91c1c;
+    }
+
+    .summary {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #4a4a63;
+    }
+
+    .summary strong {
+      color: #111827;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #e5e7eb;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    table th {
+      background: #f3f4ff;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        margin: 16px;
+        padding: 18px 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>LevelFILM – Film Scoring Calculator</h1>
+
+    <!-- INPUTS -->
+    <h2>1. Enter Film Information</h2>
+    <div class="inputs">
+      <div class="field">
+        <label for="filmName">Film Name</label>
+        <input type="text" id="filmName" placeholder="Example: Midnight Echo" />
+        <div class="hint">For display only – does not affect score.</div>
+      </div>
+
+      <div class="field">
+        <label for="genre">Genre</label>
+        <select id="genre">
+          <option value="">Select a genre...</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Horror">Horror</option>
+          <option value="Documentary">Documentary</option>
+          <option value="History">History</option>
+          <option value="TV Movie">TV Movie</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Animation">Animation</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Music">Music</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Action">Action</option>
+          <option value="Family">Family</option>
+          <option value="Science Fiction">Science Fiction</option>
+          <option value="Drama">Drama</option>
+          <option value="War">War</option>
+          <option value="Crime">Crime</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Romance">Romance</option>
+          <option value="Western">Western</option>
+          <option value="Foreign">Foreign</option>
+          <option value="Other / Mixed">Other / Mixed</option>
+        </select>
+        <div class="hint">
+          ROI assumptions use LevelFILM genre analysis (ROI range ≈ 0.31x–20.33x).
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="budget">Production Budget (US$)</label>
+        <input type="number" id="budget" placeholder="e.g., 8000000" min="0" step="100000" />
+        <div class="hint">
+          Used to estimate budget efficiency and risk.
+        </div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button type="button" onclick="calculateScore()">Calculate FilmScore</button>
+      <button type="button" class="secondary" onclick="resetForm()">Reset</button>
+    </div>
+
+    <!-- OUTPUTS -->
+    <h2>2. Scoring Results</h2>
+    <div class="outputs">
+      <div class="card">
+        <div class="score-row">
+          <span class="score-label">Film Name</span>
+          <span class="score-value" id="outFilmName">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Genre</span>
+          <span class="score-value" id="outGenre">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Budget</span>
+          <span class="score-value" id="outBudget">–</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="score-row">
+          <span class="score-label">1. ROI Potential Score</span>
+          <span class="score-value" id="roiScore">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">2. Budget Efficiency Score</span>
+          <span class="score-value" id="budgetScore">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">3. Portfolio Fit Score</span>
+          <span class="score-value" id="fitScore">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">4. Risk Score (Higher = Safer)</span>
+          <span class="score-value" id="riskScore">–</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">5. Strategic Value Score</span>
+          <span class="score-value" id="strategicScore">–</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="score-row">
+          <span class="score-label">Overall FilmScore</span>
+          <span class="score-value big" id="overallScore">–</span>
+        </div>
+        <div class="score-row" style="margin-top: 10px;">
+          <span class="score-label">Risk Band</span>
+          <span id="riskBand">–</span>
+        </div>
+        <div class="score-row" style="margin-top: 10px;">
+          <span class="score-label">Estimated Genre ROI Multiple</span>
+          <span class="score-value" id="estRoiMultiple">–</span>
+        </div>
+        <div class="summary" id="summaryText">
+          Enter a film and click <strong>Calculate</strong> to see the results.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLANATION SECTION -->
+    <hr style="margin: 32px 0; border: 0; border-top: 1px solid #e5e7eb;" />
+
+    <h2>3. How the FilmScore Is Calculated</h2>
+    <p style="font-size: 14px; color: #4b5563; line-height: 1.5;">
+      This calculator turns a film’s <strong>Genre</strong> and <strong>Budget</strong> into
+      five component scores and an overall <strong>FilmScore (0–100)</strong>, plus a
+      <strong>Risk Band</strong> (Low / Medium / High) and an <strong>Estimated Genre ROI Multiple</strong>.
+    </p>
+
+    <h3>3.1 Inputs</h3>
+    <ul style="font-size: 14px; color: #4b5563; line-height: 1.5; padding-left: 20px;">
+      <li><strong>Film Name</strong> – For display only (does not change the score).</li>
+      <li><strong>Genre</strong> – Mapped to a historical average ROI multiple and a portfolio fit weight.</li>
+      <li><strong>Budget (US$)</strong> – Used to evaluate budget efficiency and risk.</li>
+    </ul>
+
+    <h3>3.2 Genre Lookup (ROI &amp; Fit)</h3>
+    <p style="font-size: 14px; color: #4b5563;">
+      The scoring uses a genre lookup table. Each genre has an estimated average ROI multiple
+      and a portfolio fit weight between <strong>0.40</strong> and <strong>1.00</strong>.
+      ROI is normalized between the worst and best genres:
+      <strong>Min_ROI = 0.31 (Foreign)</strong>,
+      <strong>Max_ROI = 20.33 (Mystery)</strong>.
+    </p>
+
+    <table style="width: 100%; margin: 8px 0;">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Genre</th>
+          <th style="text-align: right;">Avg ROI Multiple</th>
+          <th style="text-align: right;">Portfolio Fit Weight</th>
+          <th style="text-align: left;">Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Mystery</td><td style="text-align:right;">20.33x</td><td style="text-align:right;">0.85</td><td>Very high ROI, strong commercial fit.</td></tr>
+        <tr><td>Horror</td><td style="text-align:right;">19.33x</td><td style="text-align:right;">0.55</td><td>High upside but volatile.</td></tr>
+        <tr><td>Documentary</td><td style="text-align:right;">7.18x</td><td style="text-align:right;">0.95</td><td>Core category for LevelFILM.</td></tr>
+        <tr><td>History</td><td style="text-align:right;">5.68x</td><td style="text-align:right;">0.45</td><td>Prestige and awards potential.</td></tr>
+        <tr><td>TV Movie</td><td style="text-align:right;">3.20x</td><td style="text-align:right;">1.00</td><td>Very strong ROI and strategic fit.</td></tr>
+        <tr><td>Adventure</td><td style="text-align:right;">2.40x</td><td style="text-align:right;">0.70</td><td>Commercial, but not always core.</td></tr>
+        <tr><td>Animation</td><td style="text-align:right;">2.40x</td><td style="text-align:right;">0.70</td><td>Family-driven, selective.</td></tr>
+        <tr><td>Thriller</td><td style="text-align:right;">2.10x</td><td style="text-align:right;">0.80</td><td>Strong audience appeal, more risk.</td></tr>
+        <tr><td>Music</td><td style="text-align:right;">1.99x</td><td style="text-align:right;">0.70</td><td>Niche but strategic.</td></tr>
+        <tr><td>Fantasy</td><td style="text-align:right;">1.99x</td><td style="text-align:right;">0.65</td><td>Effects-heavy, riskier.</td></tr>
+        <tr><td>Action</td><td style="text-align:right;">1.85x</td><td style="text-align:right;">0.60</td><td>Mainstream, but cost sensitive.</td></tr>
+        <tr><td>Family</td><td style="text-align:right;">1.71x</td><td style="text-align:right;">0.80</td><td>Broad, evergreen audience.</td></tr>
+        <tr><td>Science Fiction</td><td style="text-align:right;">1.65x</td><td style="text-align:right;">0.60</td><td>High concept, riskier.</td></tr>
+        <tr><td>Drama</td><td style="text-align:right;">1.50x</td><td style="text-align:right;">0.90</td><td>Core arthouse/awards lane.</td></tr>
+        <tr><td>War</td><td style="text-align:right;">1.43x</td><td style="text-align:right;">0.60</td><td>Niche and often expensive.</td></tr>
+        <tr><td>Crime</td><td style="text-align:right;">1.43x</td><td style="text-align:right;">0.80</td><td>Popular crime/thriller territory.</td></tr>
+        <tr><td>Comedy</td><td style="text-align:right;">1.42x</td><td style="text-align:right;">0.80</td><td>Broad appeal, execution-sensitive.</td></tr>
+        <tr><td>Romance</td><td style="text-align:right;">1.41x</td><td style="text-align:right;">0.80</td><td>Consistent audience demand.</td></tr>
+        <tr><td>Western</td><td style="text-align:right;">1.10x</td><td style="text-align:right;">0.40</td><td>Niche but occasionally breaks out.</td></tr>
+        <tr><td>Foreign</td><td style="text-align:right;">0.31x</td><td style="text-align:right;">0.60</td><td>Important for diversity, lower ROI.</td></tr>
+        <tr><td>Other / Mixed</td><td style="text-align:right;">1.00x</td><td style="text-align:right;">0.50</td><td>Fallback when genre is mixed/unclear.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3.3 The Five Component Scores</h3>
+    <p style="font-size: 14px; color: #4b5563;">
+      The model computes five separate 0–100 scores, then blends them into a single FilmScore.
+    </p>
+
+    <table style="width: 100%; margin: 8px 0;">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Component</th>
+          <th style="text-align: left;">What it measures</th>
+          <th style="text-align: left;">Main inputs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. ROI Potential</strong></td>
+          <td>Genre ROI relative to the worst (0.31x) and best (20.33x) genres.</td>
+          <td>Avg ROI multiple from the lookup table.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Budget Efficiency</strong></td>
+          <td>Whether the budget sits in the efficient range (roughly $1–20M), penalizing very tiny or very large budgets.</td>
+          <td>Budget (in millions).</td>
+        </tr>
+        <tr>
+          <td><strong>3. Portfolio Fit</strong></td>
+          <td>How well the genre fits LevelFILM’s strategic mix (using a 0.40–1.00 fit weight).</td>
+          <td>Portfolio fit weight from the table.</td>
+        </tr>
+        <tr>
+          <td><strong>4. Risk Score</strong></td>
+          <td>How safe the project is, based on budget size and genre volatility. Higher score = safer.</td>
+          <td>Budget tier + genre risk modifier.</td>
+        </tr>
+        <tr>
+          <td><strong>5. Strategic Value</strong></td>
+          <td>Blend of ROI Potential and Budget Efficiency for especially attractive projects.</td>
+          <td>ROI score + Budget score.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3.4 Overall FilmScore &amp; Risk Band</h3>
+    <p style="font-size: 14px; color: #4b5563;">
+      The <strong>Overall FilmScore</strong> is a weighted combination of the five components:
+    </p>
+    <ul style="font-size: 14px; color: #4b5563; padding-left: 20px;">
+      <li>30% – ROI Potential</li>
+      <li>25% – Budget Efficiency</li>
+      <li>20% – Portfolio Fit</li>
+      <li>15% – Risk (safer = higher)</li>
+      <li>10% – Strategic Value</li>
+    </ul>
+
+    <p style="font-size: 14px; color: #4b5563;">
+      The <strong>Risk Band</strong> uses the Risk Score:
+    </p>
+    <ul style="font-size: 14px; color: #4b5563; padding-left: 20px;">
+      <li><strong>Low Risk</strong> – Risk Score ≥ 80</li>
+      <li><strong>Medium Risk</strong> – 60 ≤ Risk Score &lt; 80</li>
+      <li><strong>High Risk</strong> – Risk Score &lt; 60</li>
+    </ul>
+
+    <h3>3.5 Example: Documentary at $4M</h3>
+    <p style="font-size: 14px; color: #4b5563;">
+      Example project:
+    </p>
+    <ul style="font-size: 14px; color: #4b5563; padding-left: 20px;">
+      <li><strong>Film Name:</strong> Northbound</li>
+      <li><strong>Genre:</strong> Documentary</li>
+      <li><strong>Budget:</strong> $4,000,000</li>
+    </ul>
+
+    <table style="width: 100%; margin: 8px 0;">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Step</th>
+          <th style="text-align: left;">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Genre ROI &amp; Fit</td>
+          <td>Documentary has an estimated ROI of <strong>7.18x</strong> and a fit weight of <strong>0.95</strong>.</td>
+        </tr>
+        <tr>
+          <td>ROI Potential Score</td>
+          <td>Mid-to-strong ROI vs. the full range (0.31x–20.33x) → ROI score around <strong>48 / 100</strong>.</td>
+        </tr>
+        <tr>
+          <td>Budget Efficiency</td>
+          <td>$4M is in the efficient range ($1–20M) → Budget efficiency score <strong>100 / 100</strong>.</td>
+        </tr>
+        <tr>
+          <td>Portfolio Fit</td>
+          <td>Docs are core to LevelFILM → Portfolio fit score around <strong>93 / 100</strong>.</td>
+        </tr>
+        <tr>
+          <td>Risk Score</td>
+          <td>Budget ≤ $5M and relatively safe genre → Risk score around <strong>95 / 100</strong> (Low Risk).</td>
+        </tr>
+        <tr>
+          <td>Strategic Value</td>
+          <td>Blend of ROI and Budget efficiency → Strategic value score about <strong>69 / 100</strong>.</td>
+        </tr>
+        <tr>
+          <td>Overall FilmScore</td>
+          <td>Weighted average of the five components → Overall FilmScore ≈ <strong>79 / 100</strong>, with a
+            <strong>Low Risk</strong> band.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-size: 14px; color: #4b5563; margin-top: 12px;">
+      In practice, projects with a strong FilmScore and a Low or Medium Risk band are good candidates to move forward
+      to deeper evaluation, script review, and market checks.
+    </p>
+  </div>
+
+  <script>
+    // --- GENRE DATA (Avg_ROI + Portfolio Fit + Risk Modifier) ---
+    // Avg_ROI corresponds to the new genre ROI table (Min 0.31, Max 20.33).
+    const GENRE_DATA = {
+      "Mystery":        { roi: 20.33, fitWeight: 0.85, riskMod: -5 },
+      "Horror":         { roi: 19.33, fitWeight: 0.55, riskMod: -10 },
+      "Documentary":    { roi: 7.18,  fitWeight: 0.95, riskMod: +5 },
+      "History":        { roi: 5.68,  fitWeight: 0.45, riskMod: 0 },
+      "TV Movie":       { roi: 3.20,  fitWeight: 1.00, riskMod: +5 },
+      "Adventure":      { roi: 2.40,  fitWeight: 0.70, riskMod: 0 },
+      "Animation":      { roi: 2.40,  fitWeight: 0.70, riskMod: 0 },
+      "Thriller":       { roi: 2.10,  fitWeight: 0.80, riskMod: -5 },
+      "Music":          { roi: 1.99,  fitWeight: 0.70, riskMod: 0 },
+      "Fantasy":        { roi: 1.99,  fitWeight: 0.65, riskMod: -5 },
+      "Action":         { roi: 1.85,  fitWeight: 0.60, riskMod: -5 },
+      "Family":         { roi: 1.71,  fitWeight: 0.80, riskMod: +5 },
+      "Science Fiction":{ roi: 1.65,  fitWeight: 0.60, riskMod: -5 },
+      "Drama":          { roi: 1.50,  fitWeight: 0.90, riskMod: +5 },
+      "War":            { roi: 1.43,  fitWeight: 0.60, riskMod: -5 },
+      "Crime":          { roi: 1.43,  fitWeight: 0.80, riskMod: 0 },
+      "Comedy":         { roi: 1.42,  fitWeight: 0.80, riskMod: +5 },
+      "Romance":        { roi: 1.41,  fitWeight: 0.80, riskMod: +5 },
+      "Western":        { roi: 1.10,  fitWeight: 0.40, riskMod: 0 },
+      "Foreign":        { roi: 0.31,  fitWeight: 0.60, riskMod: 0 },
+      "Other / Mixed":  { roi: 1.00,  fitWeight: 0.50, riskMod: 0 }
+    };
+
+    function clamp(x, min, max) {
+      return Math.max(min, Math.min(max, x));
+    }
+
+    // COMPONENT 1 – ROI Potential Score (0–100)
+    // Norm_ROI = (Genre_ROI – Min_ROI) / (Max_ROI – Min_ROI)
+    // ROI_Score = 20 + 80 × Norm_ROI  (clamped 0–1, then rounded)
+    function calculateRoiScore(genreKey) {
+      const g = GENRE_DATA[genreKey];
+      if (!g) return 0;
+
+      const roi = g.roi;
+      const minRoi = 0.31;
+      const maxRoi = 20.33;
+      const normalized = (roi - minRoi) / (maxRoi - minRoi);
+      const n = clamp(normalized, 0, 1);
+      return Math.round(20 + 80 * n);
+    }
+
+    // COMPONENT 2 – Budget Efficiency Score (0–100)
+    // Sweet spot ≈ 1–20M; penalize very tiny and very large budgets.
+    function calculateBudgetEfficiencyScore(budget) {
+      if (!budget || budget <= 0) return 0;
+
+      const m = budget / 1_000_000;
+      let score;
+
+      if (m < 1) {
+        // 0 → 1M: score moves from 40 → 80
+        score = 40 + 40 * (m / 1);
+      } else if (m >= 1 && m < 20) {
+        // Efficient range
+        score = 100;
+      } else if (m >= 20 && m <= 25) {
+        // 20 → 25M: 100 → 60 (linear)
+        score = 100 - 40 * ((m - 20) / 5);
+      } else {
+        // > 25M: 60 → 20 as 25 → 50M
+        score = 60 - 40 * ((m - 25) / 25);
+      }
+
+      return Math.round(clamp(score, 10, 100));
+    }
+
+    // COMPONENT 3 – Portfolio Fit Score (0–100)
+    // Fit_Weight in [0.40, 1.00]
+    // Norm_Fit = (Fit_Weight – Min_W) / (Max_W – Min_W)
+    // Fit_Score = 20 + 80 × Norm_Fit
+    function calculatePortfolioFitScore(genreKey) {
+      const g = GENRE_DATA[genreKey];
+      if (!g) return 0;
+
+      const w = g.fitWeight;
+      const minW = 0.4;
+      const maxW = 1.0;
+      const n = clamp((w - minW) / (maxW - minW), 0, 1);
+      return Math.round(20 + 80 * n);
+    }
+
+    // COMPONENT 4 – Risk Score (0–100, higher = safer)
+    // Budget risk base, then genre modifier; final clamped 10–100.
+    function calculateRiskScore(genreKey, budget) {
+      if (!budget || budget <= 0) return 0;
+
+      const m = budget / 1_000_000;
+      let budgetRisk;
+
+      if (m <= 5) {
+        budgetRisk = 90;
+      } else if (m > 5 && m < 20) {
+        budgetRisk = 75;
+      } else if (m >= 20 && m <= 25) {
+        budgetRisk = 60;
+      } else {
+        budgetRisk = 40;
+      }
+
+      const g = GENRE_DATA[genreKey];
+      const genreModifier = g ? (g.riskMod || 0) : 0;
+
+      const score = clamp(budgetRisk + genreModifier, 10, 100);
+      return Math.round(score);
+    }
+
+    // COMPONENT 5 – Strategic Value Score (0–100)
+    // Strategic_Score = 0.6 × ROI_Score + 0.4 × Budget_Score
+    function calculateStrategicValueScore(roiScore, budgetScore) {
+      const score = 0.6 * roiScore + 0.4 * budgetScore;
+      return Math.round(clamp(score, 10, 100));
+    }
+
+    // OVERALL FILM SCORE (0–100)
+    function calculateOverallScore(roiScore, budgetScore, fitScore, riskScore, strategicScore) {
+      const overall =
+        0.30 * roiScore +
+        0.25 * budgetScore +
+        0.20 * fitScore +
+        0.15 * riskScore +
+        0.10 * strategicScore;
+
+      return Math.round(clamp(overall, 0, 100));
+    }
+
+    function classifyRiskBand(riskScore) {
+      if (riskScore >= 80) return { label: "Low Risk", css: "risk-low" };
+      if (riskScore >= 60) return { label: "Medium Risk", css: "risk-medium" };
+      return { label: "High Risk", css: "risk-high" };
+    }
+
+    function calculateScore() {
+      const filmName = document.getElementById("filmName").value.trim() || "Untitled Film";
+      const genre = document.getElementById("genre").value;
+      const budgetStr = document.getElementById("budget").value;
+      const budget = Number(budgetStr);
+
+      if (!genre) {
+        alert("Please select a genre.");
+        return;
+      }
+      if (!budget || budget <= 0) {
+        alert("Please enter a positive budget value.");
+        return;
+      }
+
+      const roiScore = calculateRoiScore(genre);
+      const budgetScore = calculateBudgetEfficiencyScore(budget);
+      const fitScore = calculatePortfolioFitScore(genre);
+      const riskScore = calculateRiskScore(genre, budget);
+      const strategicScore = calculateStrategicValueScore(roiScore, budgetScore);
+      const overallScore = calculateOverallScore(roiScore, budgetScore, fitScore, riskScore, strategicScore);
+
+      const band = classifyRiskBand(riskScore);
+      const estGenreRoi = GENRE_DATA[genre]?.roi ?? 1.0;
+
+      document.getElementById("outFilmName").textContent = filmName;
+      document.getElementById("outGenre").textContent = genre;
+      document.getElementById("outBudget").textContent =
+        "$" + budget.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+      document.getElementById("roiScore").textContent = roiScore;
+      document.getElementById("budgetScore").textContent = budgetScore;
+      document.getElementById("fitScore").textContent = fitScore;
+      document.getElementById("riskScore").textContent = riskScore;
+      document.getElementById("strategicScore").textContent = strategicScore;
+      document.getElementById("overallScore").textContent = overallScore;
+
+      const riskBandSpan = document.getElementById("riskBand");
+      riskBandSpan.textContent = band.label;
+      riskBandSpan.className = "risk-pill " + band.css;
+
+      document.getElementById("estRoiMultiple").textContent =
+        estGenreRoi.toFixed(2) + "x";
+
+      document.getElementById("summaryText").innerHTML =
+        "<strong>" + filmName + "</strong> scores <strong>" +
+        overallScore +
+        "/100</strong> overall, with a <strong>" +
+        band.label +
+        "</strong> profile. ROI potential is driven by the <strong>" +
+        genre +
+        "</strong> genre and a budget of <strong>$" +
+        budget.toLocaleString(undefined, { maximumFractionDigits: 0 }) +
+        "</strong>.";
+    }
+
+    function resetForm() {
+      document.getElementById("filmName").value = "";
+      document.getElementById("genre").value = "";
+      document.getElementById("budget").value = "";
+
+      const ids = [
+        "outFilmName", "outGenre", "outBudget",
+        "roiScore", "budgetScore", "fitScore", "riskScore", "strategicScore",
+        "overallScore", "estRoiMultiple"
+      ];
+      ids.forEach(id => document.getElementById(id).textContent = "–");
+
+      const riskBandSpan = document.getElementById("riskBand");
+      riskBandSpan.textContent = "–";
+      riskBandSpan.className = "";
+
+      document.getElementById("summaryText").innerHTML =
+        "Enter a film and click <strong>Calculate</strong> to see the results.";
+    }
+  </script>
+</body>
+</html>
